@@ -17,4 +17,9 @@ contract Task_10 {
    function isFutureTimestamp(uint256 _timestamp) public view returns (bool) {
        return _timestamp > block.timestamp;
    }
+
+
+   function isPastTimestamp(uint256 _timestamp) public view returns (bool) {
+       return _timestamp < block.timestamp;
+   }
 }
