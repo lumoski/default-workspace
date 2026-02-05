@@ -17,4 +17,9 @@ contract Task_07 {
    function getBytes(uint256 _value) public pure returns (bytes memory) {
        return abi.encodePacked(_value);
    }
+
+
+   function getBytesFromString(string memory _text) public pure returns (bytes memory) {
+       return bytes(_text);
+   }
 }
