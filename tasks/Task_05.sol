@@ -16,4 +16,8 @@ contract Task_05 {
    function setStatus(Status _status) external {
        currentStatus = _status; // Установка текущего статуса
    }
+
+   function getBalance() external view returns (uint256) {
+      return uint256(currentStatus);
+   }
 }
