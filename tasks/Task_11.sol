@@ -17,4 +17,10 @@ contract Task_11 {
        require(msg.sender == owner, "Not the contract owner");
        _;
    }
+
+
+   function transferOwnership(address _newOwner) public onlyOwner {
+       require(_newOwner != address(0), "New owner is the zero address!!!");
+       owner = _newOwner;
+   }
 }
