@@ -3,6 +3,9 @@ pragma solidity ^0.8.0;
 
 
 contract ExampleUsage {
+   // Согласно ТЗ тут уже существует все исправления, код
+   // самодостаточен
+
    // Пример использования assert
    function assertExample(uint256 _value) public pure {
        // Исправление: проверяем, что _value не равен нулю
