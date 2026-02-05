@@ -10,4 +10,8 @@ contract Task_04 {
        balances[_addr] = _balance; // Установка баланса для указанного адреса
    }
 
+   function getBalance(address _addr) external view returns (uint256) {
+       return balances[_addr];
+   }
+
 }
