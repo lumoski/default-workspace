@@ -6,9 +6,10 @@ contract Task_02 {
     // Функция для генерации массива квадратов чисел от 1 до n
     function generateSquares(uint256 n) public pure returns (uint256[] memory) {
         uint256[] memory squares = new uint256[](n); // создаем массив для хранения квадратов
-       
 
-
+        for (uint256 i = 1; i <= n; i++) {
+           squares[i - 1] = i * i;
+        }
        
         return squares; // возвращаем массив квадратов
     }
