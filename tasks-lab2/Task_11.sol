@@ -5,6 +5,9 @@ pragma solidity ^0.8.0;
 contract Task_11 {
     address public owner;
     uint public targetAmount;
+    
+    // 1. Переменная для хранения суммы всех депозитов
+    uint public totalUserDeposits;
    
     enum State { Active, Paused, Closed }
     State public state;
@@ -17,9 +20,10 @@ contract Task_11 {
     event Withdrawn(address indexed user, uint amount);
     event StateChanged(State newState);
 
-
+    // 2. Модификатор проверки владельца
     modifier onlyOwner() {
-       
+        require(msg.sender == owner, "Not an owner");
+        _;
     }
 
 
@@ -34,9 +38,10 @@ contract Task_11 {
         _;
     }
 
-
+    // 3. Модификатор проверки закрытого состояния
     modifier whenClosed() {
-       
+        require(state == State.Closed, "Contract is not closed");
+        _;
     }
 
 
@@ -47,14 +52,25 @@ contract Task_11 {
         state = State.Active;
     }
 
-
+    // 4. Доработка функции deposit
     function deposit() external payable whenActive {
-       
+        require(msg.value > 0, "Deposit must be > 0");
+
+        balances[msg.sender] += msg.value;
+        totalUserDeposits += msg.value;
+
+        emit Deposited(msg.sender, msg.value);
+
+        // Автоматическое закрытие при достижении цели
+        if (totalUserDeposits >= targetAmount) {
+            state = State.Closed;
+            emit StateChanged(State.Closed);
+        }
     }
 
 
     function pause() external onlyOwner whenActiveOrPaused {
-        require(state != State.Paused, "Contract paused");
+        require(state != State.Paused, "Contract already paused");
         state = State.Paused;
         emit StateChanged(state);
     }
@@ -66,24 +82,29 @@ contract Task_11 {
         emit StateChanged(state);
     }
 
-
-    function withdraw() external ... {
-        require(state == State.Paused, "Fund withdraw available only if paused");
+    // 5. Доработка функции withdraw для пользователей (в режиме Paused)
+    function withdraw() external {
+        require(state == State.Paused, "Withdrawal only available when paused");
         uint userBalance = balances[msg.sender];
+        require(userBalance > 0, "Insufficient balance");
 
+        // Обновление состояний перед отправкой (защита от Reentrancy)
+        balances[msg.sender] = 0;
+        totalUserDeposits -= userBalance;
 
+        payable(msg.sender).transfer(userBalance);
+        emit Withdrawn(msg.sender, userBalance);
     }
 
-
+    // Вывод всех средств владельцем при закрытии контракта
     function ownerWithdrawAll() external onlyOwner whenClosed {
         uint contractBalance = address(this).balance;
-        require(contractBalance > 0, "No fund to withdraw");
+        require(contractBalance > 0, "No funds to withdraw");
 
-
-        balances[owner] = 0;
-
-
+        // Очистка данных
         totalUserDeposits = 0;
+
+        payable(owner).transfer(contractBalance);
     }
 
 
